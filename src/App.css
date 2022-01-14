@@ -1,4 +1,9 @@
 .App {
   text-align: center;
 }
-
+.searchIcon{
+  color: black;
+  width: 30px;
+  height: 30px;
+  
+}
