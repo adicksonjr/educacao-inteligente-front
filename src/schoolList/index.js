@@ -20,9 +20,11 @@ const SchoolList = () => {
     const [searchName,setSearchName] = useState('');
     const [filterName,setFilterName] = useState('');
     const [showFilterInput,setShowFilterInput] = useState(false);
+    const [showSchoolSearch, setShowSchoolSearch] = useState(true);
     
     const handleSearch = async () => {
         setLoading(true)
+        setShowSchoolSearch(false)
         await api.get(ADVANCED_SEARCH+searchName)
         .then(response => {
             setListSchools(response.data[1]);
@@ -33,6 +35,7 @@ const SchoolList = () => {
         })
     }
     const handleFilter = () => {
+        setListSchoolsFilter([])
         listSchools.forEach(school => {
             if(filterName.toUpperCase()===school.cidade){
                 setListSchoolsFilter([...listSchoolsFilter,school])
@@ -73,52 +76,58 @@ const SchoolList = () => {
                     </FilterButton>
                 </Button>
             }
-            <TextField 
-                id="standard-basic" 
-                label="Busca" 
-                variant="standard"
-                value={searchName}
-                onChange={(e)=>{setSearchName(e.target.value)}}
-                onKeyDown={(e) => {if(e.key==='Enter'){handleSearch()}}}
-                InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={handleSearch}>
-                          <BiSearchAlt2/>
-                        </IconButton>
-                      </InputAdornment>
-                    )
-                  }}
-            />
         </div>
         {isLoading?
             <LoadingContainer>
                 <Spinner name="ball-spin-fade-loader" />
             </LoadingContainer>
             :
-            <List
-            sx={{ bgcolor: 'background.paper' }}
-            component="nav"
-            >
-                {showFilterList?
-                    listSchoolsFilter.map((school,index) => (
-                        <ListItemButton key={index}>
-                            <ListItemIcon>
-                            </ListItemIcon>
-                            <ListItemText primary={school.nome} />
-                            <BiCommentDetail/>
-                        </ListItemButton>
-                    ))
-                :
-                    listSchools.map((school,index) => (
-                        <ListItemButton key={index}>
-                            <ListItemIcon>
-                            </ListItemIcon>
-                            <ListItemText primary={school.nome} />
-                            <BiCommentDetail/>
-                        </ListItemButton>
-                    ))}
-            </List>
+            <>
+                {showSchoolSearch?
+                    <TextField 
+                        id="standard-basic" 
+                        label="Busca" 
+                        variant="standard"
+                        helperText='Buscar escolas por nome'
+                        value={searchName}
+                        onChange={(e)=>{setSearchName(e.target.value)}}
+                        onKeyDown={(e) => {if(e.key==='Enter'){handleSearch()}}}
+                        InputProps={{
+                            endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton onClick={handleSearch}>
+                                <BiSearchAlt2/>
+                                </IconButton>
+                            </InputAdornment>
+                            )
+                        }}
+                    />
+                    :
+                    <List
+                    sx={{ bgcolor: 'background.paper' }}
+                    component="nav"
+                    >
+                        {showFilterList?
+                            listSchoolsFilter.map((school,index) => (
+                                <ListItemButton key={index}>
+                                    <ListItemIcon>
+                                    </ListItemIcon>
+                                    <ListItemText primary={school.nome} />
+                                    <BiCommentDetail/>
+                                </ListItemButton>
+                            ))
+                        :
+                            listSchools.map((school,index) => (
+                                <ListItemButton key={index}>
+                                    <ListItemIcon>
+                                    </ListItemIcon>
+                                    <ListItemText primary={school.nome} />
+                                    <BiCommentDetail/>
+                                </ListItemButton>
+                            ))}
+                    </List>
+                }
+            </>
         }
     </Container>
   );
