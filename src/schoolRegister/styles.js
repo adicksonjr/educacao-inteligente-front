@@ -11,3 +11,7 @@ export const RegisterForm = styled.form`
     box-shadow: 1px 1px 3px gray;
     border-radius: 3px;
 ` 
+export const ErrorText = styled.p`
+    color: #C62828;
+    font-size: 13px;
+`
