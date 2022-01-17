@@ -7,10 +7,12 @@ import { AiOutlineArrowLeft } from 'react-icons/ai';
 const RegisteredSchools = ({onBack = () => {}}) => {
     return (
         <>
-            <Button  sx={{ maxWidth: 150 , margin: 3}}  onClick={onBack} >
-                <AiOutlineArrowLeft className="svgButtonList"/>
-                voltar
-            </Button>
+            <div className='d-flex justify-content-start'>
+                <Button  sx={{ maxWidth: 150 , margin: 3}}  onClick={onBack} >
+                    <AiOutlineArrowLeft className="svgButtonList"/>
+                    voltar
+                </Button>
+            </div>
             <TableContainer component={Paper} >
                 <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table" >
                 <TableHead>

@@ -58,7 +58,7 @@ const SchoolRegister = () =>{
             
         }
         if(formValues.localizacao === undefined){
-            setIsErrorLocalization(true)
+            setIsErrorLocalization(true);
             isErrorMsg = true;
         }else{
             setIsErrorLocalization(false);
@@ -78,9 +78,9 @@ const SchoolRegister = () =>{
     const handleSubmit = (e) => {
         e.preventDefault();
         if(!handleSetErrorMsg()){
-            setOpen(true)
+            setOpen(true);
         }
-        console.log(formValues)
+        console.log(formValues);
     }
     
     return (
@@ -118,10 +118,12 @@ const SchoolRegister = () =>{
                     schoolList={() => JSON.parse(getSchoolRegister())}/>
                 :
                 <>
-                    <Button sx={{ maxWidth: 220, fontSize: 12}} onClick={() => setIsListSchools(true)}>
-                        <FaListUl className='svgButtonList'/>
-                        Escolas Cadastradas
-                    </Button>
+                    <div className='d-flex justify-content-start'>
+                        <Button sx={{ maxWidth: 220, fontSize: 12}} onClick={() => setIsListSchools(true)}>
+                            <FaListUl className='svgButtonList'/>
+                            Escolas Cadastradas
+                        </Button>
+                    </div>
 
                     <Container className='d-flex justify-content-center align-itens-center'>
                             <RegisterForm onSubmit={handleSubmit}>
