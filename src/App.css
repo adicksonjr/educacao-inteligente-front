@@ -16,3 +16,11 @@
   margin-bottom: 2px;
   margin-right: 4px;
 }
+.sideLink{
+  text-decoration: none;
+  color: black;
+}
+.sideSVG{
+  margin-bottom: 4px;
+  margin-right: 5px;
+}
