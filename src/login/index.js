@@ -1,44 +1,97 @@
 import React, { useState } from 'react'
 import Container from '@mui/material/Container'
 import { Button, TextField } from '@mui/material'
-// import {HiEye, HiEyeOff} from 'react-icons/hi'
+import { login } from '../localstorage'
+import { useNavigate } from 'react-router-dom';
+import {ImgDiv} from './styles'
 const Login = () => {
-  // const [email, setEmail] = useState('')
-  // const [password, setPassword] = useState('')
-  const [show, setShow] = useState(false)
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isErrorEmail,setIsErrorEmail] = useState(false);
+  const [isErrorPassword,setIsErrorPassword] = useState(false);
+  const [errorEmailMsg,setErrorEmailMsg] = useState('');
+  const errorPasswordEmpty  = "Preencha a senha";
+  const navigate = useNavigate();
+  const handleChange = (e) => {
+    const {name, value } = e.target;
+    switch (name) {
+      case 'email':
+        setEmail(value)
+        break;
+      case 'password':
+        setPassword(value)
+        break;
+      default:
+        break;
+    }
+  }
+  const validateEmail = () => {
+      if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)){
+        return (true)
+      }
+        return (false)
+  };
+  const handleSetErrorMsg = () => {
+    let isErrorMsg= false;
+    if(email===''){
+      setIsErrorEmail(true)
+      setErrorEmailMsg('Preencha o email')
+      isErrorMsg=true;
+    }else{
+      setIsErrorEmail(false)
+    }
+    if(password===''){
+      setIsErrorPassword(true)
+      isErrorMsg=true;
+    }else{
+      setIsErrorPassword(false)
+    }
+    if(!validateEmail()){
+      setIsErrorEmail(true)
+      setErrorEmailMsg('Preencha com um email valido')
+      isErrorMsg=true;
+    }else{
+      setIsErrorEmail(false)
+    }
+    return isErrorMsg;
+  }
+  const handleLogin = () => {
+    if(!handleSetErrorMsg()){
+      login('token')
+      navigate('/sobre');  
+    }
+  }
   return <>
-    <Container component='main' maxWidth='xs'>
-        <div className='mt-3 mt-md-5'>
-          <div className='text-center'>
-            <img alt='' src='logo.png'/>
-          </div>
+    <Container className='loginDiv' component='main' maxWidth='sm'>
+        <div className='mt-3 mt-md-5 d-flex align-items-center flex-column'>
+          <ImgDiv src={'logo.png'}/>
           <div className='mt-4'>
             <TextField
               variant='outlined'
               margin='normal'
               required
               fullWidth
-              id='email'
               label='Email'
-              name='username'
+              name='email'
               type='email'
+              value={email}
+              onChange={handleChange}
+              error={isErrorEmail}
+              helperText={isErrorEmail?errorEmailMsg:''}
             />
             <TextField
               variant='outlined'
               margin='normal'
               required
               fullWidth
-              id='password'
               label='Senha'
               name='password'
-              type={show ? 'text' : 'password'}
+              type='password'
+              value={password}
+              onChange={handleChange}
+              error={isErrorPassword}
+              helperText={isErrorPassword?errorPasswordEmpty:''}
             />
-            {/* {
-              show?
-                <HiEye/>
-                :
-                <HiEyeOff/>
-            } */}
             <Button
               type='button'
               variant='contained'
@@ -46,12 +99,12 @@ const Login = () => {
               color='primary'
               size='large'
               className='mb-3 mb-md-4 mt-4'
+              onClick={handleLogin}
             >Entrar</Button>
           </div>
         </div>
     </Container>
   </>
-
 }
 
 export default Login;

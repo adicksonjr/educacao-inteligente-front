@@ -12,12 +12,13 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import { Button } from '@mui/material';
 import { FiArrowLeft, FiMenu } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { GiArchiveRegister } from 'react-icons/gi';
 import { FaListAlt } from 'react-icons/fa';
 import { BsFillInfoSquareFill } from 'react-icons/bs';
-const drawerWidth = 240;
+import { isAuthenticated, logout } from '../localstorage';
 
+const drawerWidth = 240;
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
     flexGrow: 1,
@@ -55,7 +56,7 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 const DrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
+  display: 'flex' ,
   alignItems: 'center',
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
@@ -64,6 +65,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 const NavBar = ({children}) => {
+  const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
 
   const handleDrawerOpen = () => {
@@ -73,8 +75,12 @@ const NavBar = ({children}) => {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
+  const handleLogout = () => {
+    logout();
+    navigate('/login')
+  }
   return (
+    isAuthenticated()?
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
@@ -88,9 +94,14 @@ const NavBar = ({children}) => {
           >
             <FiMenu size={30}/>
           </Button>
-          <Typography variant="h6" noWrap component="div">
+          <Typography 
+            variant="h6" 
+            component="div"
+            className='d-flex justify-content-start'
+            sx={{ flexGrow: 1 }}>
             MOBIEDUCA.ME
           </Typography>
+            <Button color="inherit" onClick={handleLogout}>Sair</Button>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -150,6 +161,10 @@ const NavBar = ({children}) => {
         {children}
       </Main>
     </Box>
+    :
+    <>
+      {children}
+    </>
   );
 }
 export default NavBar;

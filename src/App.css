@@ -24,3 +24,10 @@
   margin-bottom: 4px;
   margin-right: 5px;
 }
+.loginDiv{
+  background-color: white;
+  width: 100%;
+  height: 500px;
+  box-shadow: 1px 1px 3px gray;
+  border-radius: 3px;
+}
