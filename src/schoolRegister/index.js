@@ -6,9 +6,13 @@ import { ErrorText, RegisterForm, SuccessContainer } from './styles';
 import { getSchoolRegister, setSchoolRegister } from '../localstorage';
 import Modal from '../modal';
 import {CgClose} from 'react-icons/cg';
+import {FaListUl} from 'react-icons/fa';
+
+import RegisteredSchools from './registeredSchools';
 
 
 const SchoolRegister = () =>{
+    const [isListSchools, setIsListSchools] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [open,setOpen] = useState(false);
     const [isLoading,setIsLoading] = useState(false)
@@ -21,16 +25,22 @@ const SchoolRegister = () =>{
         errorLocalizationMsg : "Marque a localização",
         errorTurnoMsg : "Marque pelo menos um turno"
     };
-    
     useEffect(() => {
         if (isLoading) {
-          setTimeout(() => {
-          setIsLoading(false);
-          setIsSuccess(true)
-          setOpen(false)
+            setTimeout(() => {
+                setIsLoading(false);
+                setIsSuccess(true);
+                setOpen(false);
+                if(getSchoolRegister() !== null){
+                    var formValuesAux = JSON.parse(getSchoolRegister());
+                    formValuesAux.push({'escola' : formValues });
+                    setSchoolRegister(JSON.stringify(formValuesAux));
+                }else{
+                    setSchoolRegister(JSON.stringify([{'escola' : formValues }]));
+                }
         }, 2000);
         }
-      }, [isLoading]); 
+      }, [isLoading,formValues]); 
     const handleImputChange = (e) => {
         const {name, value, type, checked} = e.target;
         type === 'checkbox'?
@@ -40,14 +50,14 @@ const SchoolRegister = () =>{
     }
     const handleSetErrorMsg = () => {
         let isErrorMsg= false;
-        if( formValues.schoolName===undefined || formValues.schoolName === ''){
+        if( formValues.nome===undefined || formValues.nome === ''){
             setIsErrorSchoolName(true);
             isErrorMsg = true;
         }else{
             setIsErrorSchoolName(false);
             
         }
-        if(formValues.localization === undefined){
+        if(formValues.localizacao === undefined){
             setIsErrorLocalization(true)
             isErrorMsg = true;
         }else{
@@ -68,15 +78,9 @@ const SchoolRegister = () =>{
     const handleSubmit = (e) => {
         e.preventDefault();
         if(!handleSetErrorMsg()){
-            if(getSchoolRegister() !== null){
-                var formValuesAux = JSON.parse(getSchoolRegister())
-                formValuesAux.push(formValues)
-                setSchoolRegister(JSON.stringify(formValuesAux))
-            }else{
-                setSchoolRegister(JSON.stringify([formValues]))
-            }
             setOpen(true)
         }
+        console.log(formValues)
     }
     
     return (
@@ -107,76 +111,90 @@ const SchoolRegister = () =>{
                 :
                 <></>
             }
-            <Container className='d-flex justify-content-center align-itens-center'>
-                    <RegisterForm onSubmit={handleSubmit}>
-                        <Typography variant="h5" gutterBottom component="div">
-                            Cadastro de escolas
-                        </Typography>
-                        {isSuccess && <SuccessContainer>
-                            <p>Escola Cadastrada com sucesso!</p> 
-                            <CgClose onClick={() => setIsSuccess(false)}/>
-                        </SuccessContainer>}
-                        <FormControl 
-                            fullWidth>
-                            <TextField
-                                error={isErrorSchoolName}
-                                helperText={isErrorSchoolName?errorMsg.errorSchoolNameMsg:''}
-                                margin="normal"
-                                variant='standard'
-                                label='Nome da escola *'
-                                name='schoolName'
-                                onChange={handleImputChange}
-                                value={formValues.schoolName || ''}
-                            />
-                            <TextField
-                                margin="normal"
-                                variant='standard'
-                                label='Nome do diretor'
-                                name='schoolDiretor'
-                                onChange={handleImputChange}
-                                value={formValues.schoolDiretor || ''}
-                            />
-                        </FormControl>
-                        <FormControl
-                            margin="normal" >
-                            <FormLabel component="legend">Localização da escola *</FormLabel>
-                            <RadioGroup
-                                row
-                                aria-label="gender"
-                                defaultValue="female"
-                                name="localization"
-                                onChange={handleImputChange}
-                            >
-                                <FormControlLabel value="Urbana" control={<Radio />} label="Urbana" />
-                                <FormControlLabel value="Rural" control={<Radio />} label="Rural" />
-                            </RadioGroup>
-                            <ErrorText variant="h5" gutterBottom component="div">
-                                {isErrorLocalization?errorMsg.errorLocalizationMsg:''}
-                            </ErrorText>
-                        </FormControl>
-                        <FormControl
-                            margin="normal">
-                            <FormLabel component="legend">Turnos *</FormLabel>
-                            <div className='d-flex justify-content-center flex-wrap'>
-                                <FormControlLabel control={<Checkbox name='manha' value='Manhã' onChange={handleImputChange}/>} label="Manhã" />
-                                <FormControlLabel control={<Checkbox name='tarde' value='Tarde' onChange={handleImputChange}/>} label="Tarde" />
-                                <FormControlLabel control={<Checkbox name='noite' value='Noite' onChange={handleImputChange}/>} label="Noite" />
-                                <FormControlLabel control={<Checkbox name='integral' value='Integral' onChange={handleImputChange}/>} label="Integral" />
-                            </div>
-                            <ErrorText variant="h5" gutterBottom component="div">
-                                {isErrorTurno?errorMsg.errorTurnoMsg:''}
-                            </ErrorText>
-                        </FormControl>
-                        <div className='d-flex justify-content-end'>
-                            <Button 
-                                margin="normal"
-                                type='submit' 
-                                variant='contained'>
-                                Cadastrar
-                            </Button>
-                        </div>
-                    </RegisterForm>
-            </Container>
+            <>
+            {isListSchools?
+                <RegisteredSchools 
+                    onBack={() => setIsListSchools(false)}
+                    schoolList={() => JSON.parse(getSchoolRegister())}/>
+                :
+                <>
+                    <Button sx={{ maxWidth: 220, fontSize: 12}} onClick={() => setIsListSchools(true)}>
+                        <FaListUl className='svgButtonList'/>
+                        Escolas Cadastradas
+                    </Button>
+
+                    <Container className='d-flex justify-content-center align-itens-center'>
+                            <RegisterForm onSubmit={handleSubmit}>
+                                <Typography variant="h5" gutterBottom component="div">
+                                    Cadastro de escolas
+                                </Typography>
+                                {isSuccess && <SuccessContainer>
+                                    <p>Escola Cadastrada com sucesso!</p> 
+                                    <CgClose onClick={() => setIsSuccess(false)}/>
+                                </SuccessContainer>}
+                                <FormControl 
+                                    fullWidth>
+                                    <TextField
+                                        error={isErrorSchoolName}
+                                        helperText={isErrorSchoolName?errorMsg.errorSchoolNameMsg:''}
+                                        margin="normal"
+                                        variant='standard'
+                                        label='Nome da escola *'
+                                        name='nome'
+                                        onChange={handleImputChange}
+                                        value={formValues.nome || ''}
+                                    />
+                                    <TextField
+                                        margin="normal"
+                                        variant='standard'
+                                        label='Nome do diretor'
+                                        name='diretor'
+                                        onChange={handleImputChange}
+                                        value={formValues.diretor || ''}
+                                    />
+                                </FormControl>
+                                <FormControl
+                                    margin="normal" >
+                                    <FormLabel component="legend">Localização da escola *</FormLabel>
+                                    <RadioGroup
+                                        row
+                                        aria-label="gender"
+                                        defaultValue="female"
+                                        name="localizacao"
+                                        onChange={handleImputChange}
+                                    >
+                                        <FormControlLabel value="1" control={<Radio />} label="1-Urbana" />
+                                        <FormControlLabel value="2" control={<Radio />} label="2-Rural" />
+                                    </RadioGroup>
+                                    <ErrorText variant="h5" gutterBottom component="div">
+                                        {isErrorLocalization?errorMsg.errorLocalizationMsg:''}
+                                    </ErrorText>
+                                </FormControl>
+                                <FormControl
+                                    margin="normal">
+                                    <FormLabel component="legend">Turnos *</FormLabel>
+                                    <div className='d-flex justify-content-center flex-wrap'>
+                                        <FormControlLabel control={<Checkbox name='manha' value='M' onChange={handleImputChange}/>} label="Manhã" />
+                                        <FormControlLabel control={<Checkbox name='tarde' value='T' onChange={handleImputChange}/>} label="Tarde" />
+                                        <FormControlLabel control={<Checkbox name='noite' value='N' onChange={handleImputChange}/>} label="Noite" />
+                                        <FormControlLabel control={<Checkbox name='integral' value='I' onChange={handleImputChange}/>} label="Integral" />
+                                    </div>
+                                    <ErrorText variant="h5" gutterBottom component="div">
+                                        {isErrorTurno?errorMsg.errorTurnoMsg:''}
+                                    </ErrorText>
+                                </FormControl>
+                                <div className='d-flex justify-content-end'>
+                                    <Button 
+                                        margin="normal"
+                                        type='submit' 
+                                        variant='contained'>
+                                        Cadastrar
+                                    </Button>
+                                </div>
+                            </RegisterForm>
+                    </Container>
+                </>}
+            </>
         </>
     )
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { ModalBackground, Container, Content} from './styles';
 
-const Modal = ({msg='', children, widthModal, heightModal,loading=false}) => {
+const Modal = ({msg='', children, widthModal, heightModal}) => {
     return (
         <ModalBackground>
             <Container widthContainer={widthModal} heightContainer={heightModal} >

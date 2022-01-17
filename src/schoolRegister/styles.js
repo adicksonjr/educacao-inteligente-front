@@ -35,3 +35,9 @@ export const SuccessContainer = styled(DivFlex)`
         width: 100%;
     }
 `
+export const TurnoContainer = styled(DivFlex)`
+    justify-content: flex-start;
+    p{
+        margin: 5px;
+    }
+`
