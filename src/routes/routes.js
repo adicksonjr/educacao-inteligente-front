@@ -13,6 +13,7 @@ const Router = () =>
             <Route exact path='/listagem' element={<PrivateRoute><SchoolList/></PrivateRoute>}/>
             <Route exact path='/registro' element={<PrivateRoute><SchoolRegister/></PrivateRoute>}/>
             <Route exact path='/sobre' element={<PrivateRoute><About/></PrivateRoute>}/>
+            <Route exact path='/' element={<PrivateRoute><About/></PrivateRoute>}/>
         </Routes>
     );
 
