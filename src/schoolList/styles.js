@@ -10,7 +10,6 @@ export const LoadingContainer = styled(DivFlex)`
     margin-top: 10%;
 `
 export const FilterButton = styled(DivFlex)`
-    color: black;
     p{
         font-size: 15px;
         margin: 0;

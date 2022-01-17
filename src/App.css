@@ -1,10 +1,10 @@
 .App {
   height: 100vh;
   text-align: center;
-  background-color: #F5F5F5;
   padding: 2%;
   display: flex;
   flex-direction: column;
+  padding: 5%;
 }
 .searchIcon{
   color: black;

@@ -1,12 +1,8 @@
 
-import * as React from 'react';
+import React from 'react';
 import { useState } from 'react';
-import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import { Button, Container, IconButton, InputAdornment, TextField } from '@mui/material';
-import { BiCommentDetail, BiFilter, BiSearchAlt2 } from 'react-icons/bi';
+import { Button, Container, IconButton, InputAdornment, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
+import { BiFilter, BiSearchAlt2 } from 'react-icons/bi';
 import api, { ADVANCED_SEARCH} from '../api';
 import Spinner from 'react-spinkit';
 import { FilterButton, LoadingContainer } from './styles';
@@ -22,6 +18,7 @@ const SchoolList = () => {
     const [showFilterInput,setShowFilterInput] = useState(false);
     const [showSchoolSearch, setShowSchoolSearch] = useState(true);
     
+    
     const handleSearch = async () => {
         setLoading(true)
         setShowSchoolSearch(false)
@@ -35,48 +32,19 @@ const SchoolList = () => {
         })
     }
     const handleFilter = () => {
-        setListSchoolsFilter([])
+        let listSchoolsFilterAux = []
         listSchools.forEach(school => {
-            if(filterName.toUpperCase()===school.cidade){
-                setListSchoolsFilter([...listSchoolsFilter,school])
+            if(school.cidade.includes(filterName.toUpperCase())){
+                console.log('passei')
+                listSchoolsFilterAux = [...listSchoolsFilterAux, school]
                 setShowFilterList(true)
             }
         })
+        setListSchoolsFilter(listSchoolsFilterAux)
         setShowFilterInput(false)
     }
     return (
-    <Container component='main' maxWidth='lg' >
-        <div className='d-flex flex-row justify-content-between align-items-center '>
-            {showFilterInput?
-                <TextField 
-                    id="standard-basic" 
-                    label="Filtro por cidade" 
-                    variant="standard"
-                    value={filterName}
-                    onChange={(e)=>{setFilterName(e.target.value)}}
-                    onKeyDown={(e) => {if(e.key==='Enter'){handleFilter()}}}
-                    InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton onClick={handleFilter}>
-                              <BiSearchAlt2/>
-                            </IconButton>
-                          </InputAdornment>
-                        )
-                      }}
-                />
-                :
-                <Button 
-                    size="medium" 
-                    variant='text'
-                    onClick={() => setShowFilterInput(true)}>
-                    <FilterButton>
-                        <p>Filtrar</p>
-                        <BiFilter/>
-                    </FilterButton>
-                </Button>
-            }
-        </div>
+    <Container maxWidth='lg' >
         {isLoading?
             <LoadingContainer>
                 <Spinner name="ball-spin-fade-loader" />
@@ -85,6 +53,7 @@ const SchoolList = () => {
             <>
                 {showSchoolSearch?
                     <TextField 
+                        fullWidth
                         id="standard-basic" 
                         label="Busca" 
                         variant="standard"
@@ -103,29 +72,94 @@ const SchoolList = () => {
                         }}
                     />
                     :
-                    <List
-                    sx={{ bgcolor: 'background.paper' }}
-                    component="nav"
-                    >
-                        {showFilterList?
-                            listSchoolsFilter.map((school,index) => (
-                                <ListItemButton key={index}>
-                                    <ListItemIcon>
-                                    </ListItemIcon>
-                                    <ListItemText primary={school.nome} />
-                                    <BiCommentDetail/>
-                                </ListItemButton>
-                            ))
-                        :
-                            listSchools.map((school,index) => (
-                                <ListItemButton key={index}>
-                                    <ListItemIcon>
-                                    </ListItemIcon>
-                                    <ListItemText primary={school.nome} />
-                                    <BiCommentDetail/>
-                                </ListItemButton>
-                            ))}
-                    </List>
+                    <>
+                        <div className='d-flex flex-row justify-content-between align-items-center '>
+                            <Button onClick={() => setShowSchoolSearch(true)}>Voltar</Button>
+                            {showFilterInput?
+                                <TextField 
+                                    id="standard-basic" 
+                                    label="Filtro por cidade" 
+                                    variant="standard"
+                                    value={filterName}
+                                    onChange={(e)=>{setFilterName(e.target.value)}}
+                                    onKeyDown={(e) => {if(e.key==='Enter'){handleFilter()}}}
+                                    InputProps={{
+                                        endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton onClick={handleFilter}>
+                                            <BiSearchAlt2/>
+                                            </IconButton>
+                                        </InputAdornment>
+                                        )
+                                    }}
+                                />
+                                :
+                                <Button 
+                                    size="medium" 
+                                    variant='text'
+                                    onClick={() => setShowFilterInput(true)}>
+                                    <FilterButton>
+                                        <p>Filtrar</p>
+                                        <BiFilter/>
+                                    </FilterButton>
+                                </Button>
+                            }
+                        </div>  
+                        <TableContainer component={Paper} >
+                            <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table" >
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Nome</TableCell>
+                                    <TableCell >Cidade</TableCell>
+                                    <TableCell >Estado</TableCell>
+                                    <TableCell >Situacao</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {showFilterList?
+                                    listSchoolsFilter.map((school,index) => (
+                                        <TableRow
+                                            key={index}
+                                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        >
+                                            <TableCell component="th" scope="row">
+                                                {school.nome} 
+                                            </TableCell>
+                                            <TableCell component="th" scope="row">
+                                                {school.cidade} 
+                                            </TableCell>
+                                            <TableCell component="th" scope="row">
+                                                {school.estado} 
+                                            </TableCell>
+                                            <TableCell component="th" scope="row">
+                                                {school.situacaoFuncionamentoTxt} 
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                :
+                                    listSchools.map((school,index) => (
+                                        <TableRow
+                                            key={index}
+                                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                        >
+                                            <TableCell component="th" scope="row">
+                                                {school.nome} 
+                                            </TableCell>
+                                            <TableCell component="th" scope="row">
+                                                {school.cidade} 
+                                            </TableCell>
+                                            <TableCell component="th" scope="row">
+                                                {school.estado} 
+                                            </TableCell>
+                                            <TableCell component="th" scope="row">
+                                                {school.situacaoFuncionamentoTxt} 
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                            </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </>
                 }
             </>
         }
